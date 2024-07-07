@@ -1,28 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App(){
-  const [toDo, setToDo] = useState("");
-  const [toDos, setToDos] = useState([]);
-  const onChange = (event) => setToDo(event.target.value);
-  const onSubmit = (event) => {
-    event.preventDefault();
-    if(toDo === ""){
-      return;
-    }
-    setToDo("");
-    setToDos(currentArray => [toDo, ...currentArray])
-    
-  }
-  return(
-    <div>
-      <h1>ToDo List({toDos.length})</h1>
-      <form onSubmit={onSubmit}>
-        <input type="text" placeholder="ToDo write" onChange={onChange} value={toDo}/>
-        <button>Add To Do</button>
-      </form>
-      <hr/>
-      {toDos.map((item, index) => <li key={index}>{item}</li>)}
+ const [loading, setLoading] = useState(true);
+ const [coins, setCoins] = useState([]);
+ const [myDal, setMyDal] = useState(0);
+
+ const buyCoin = () => {};
+
+ useEffect(() => {
+  fetch("https://api.coinpaprika.com/v1/tickers")
+  .then((response) =>  response.json())
+  .then((json) => {
+    setCoins(json)
+    setLoading(false);
+
+  });
+ }, [])
+ //코인 달러입력했을 때 구매할 수 있는 량 찾는 거 해보기 
+ return ( 
+  <div>
+    <h1>the Coins!{loading ? "" : `(${coins.length})` }</h1>
+    {loading ? <strong>loading,,,,</strong> :
+      <div>
+        <select>
+          {coins.map((coin) =><option>{coin.name}({coin.symbol}) : ${coin.quotes.USD.price}</option> )}
+        </select>
+        <input type="number" placeholder="how much?" />
+        <span></span>
       </div>
-  )
+    }
+    
+  </div>
+ )
+
 }
 export default App;
